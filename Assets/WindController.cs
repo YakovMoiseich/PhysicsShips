@@ -15,7 +15,6 @@ public class WindController : MonoBehaviour {
 
 	void Awake() {
 		_windParticles = gameObject.GetComponent<ParticleSystem>();
-		_windDirection = new Vector3(0.0f, 0.0f, 1.0f);
 	}
 
 	void HideParticles() {
@@ -38,6 +37,7 @@ public class WindController : MonoBehaviour {
 	}
 	
 	void Update() {
+		_windDirection = transform.forward;
 		UpdateParticlesSpeed(windSpeed);
 	}
 

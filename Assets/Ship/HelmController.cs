@@ -10,12 +10,16 @@ public class HelmController : MonoBehaviour {
 	private float maxHelmAngle = 55.0f;
 	private float minHelmAngle = -55.0f;
 
+	private float _helmFrictionFactor = 0.1f;
+
+	private float _helmSquare;
 	private float _helmOffsetDegrees;
 	private Transform _helm;
 
 	void Awake() {
-		_helm = gameObject.transform;
+		_helm = transform;
 		_helmOffsetDegrees = 0.0f;
+		_helmSquare = transform.lossyScale.x * transform.lossyScale.y;
 	}
 
 	void Start() {
@@ -27,6 +31,10 @@ public class HelmController : MonoBehaviour {
 		float verticalInput = Input.GetAxis("Vertical");
 		float horizontalInput = Input.GetAxis("Horizontal");
 		RotateHelmOnInput(horizontalInput);
+	}
+
+	public float GetHelmTurnForce(float currentShipSpeed) {
+		return currentShipSpeed * _helmSquare * _helmFrictionFactor * -GetCurrentHelmSignedRotation();
 	}
 
 	void RotateHelmOnInput(float horizontalInput) {
@@ -53,7 +61,7 @@ public class HelmController : MonoBehaviour {
 	}
 
 	float GetCurrentHelmSignedRotation() {
-		float currentHelmRotation = _helm.transform.eulerAngles.y;
+		float currentHelmRotation = _helm.transform.localEulerAngles.y;
 		currentHelmRotation = currentHelmRotation > 180.0f ? currentHelmRotation - 360.0f : currentHelmRotation;
 		return currentHelmRotation;
 	}
