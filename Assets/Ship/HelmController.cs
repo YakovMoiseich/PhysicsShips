@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class ShipController : MonoBehaviour {
+public class HelmController : MonoBehaviour {
 
 	private float _helmAlignSpeedDegrees = 0.5f;
 	private float _helmRotateSpeedDegrees = 2.0f;
@@ -14,17 +14,16 @@ public class ShipController : MonoBehaviour {
 	private Transform _helm;
 
 	void Awake() {
-		_helm = transform.Find("Helm");
+		_helm = gameObject.transform;
 		_helmOffsetDegrees = 0.0f;
 	}
 
 	void Start() {
-		
+
 	}
 
 	void Update() {
 		AlignHelm();
-
 		float verticalInput = Input.GetAxis("Vertical");
 		float horizontalInput = Input.GetAxis("Horizontal");
 		RotateHelmOnInput(horizontalInput);
@@ -39,8 +38,8 @@ public class ShipController : MonoBehaviour {
 	float LimitHelmOffset(float helmRotationToApply) {
 		float currentHelmRotation = GetCurrentHelmSignedRotation();
 		helmRotationToApply = currentHelmRotation + helmRotationToApply > maxHelmAngle ? maxHelmAngle - currentHelmRotation
-			: currentHelmRotation + helmRotationToApply < minHelmAngle ? minHelmAngle - currentHelmRotation 
-			: helmRotationToApply;
+			: currentHelmRotation + helmRotationToApply < minHelmAngle ? minHelmAngle - currentHelmRotation
+				: helmRotationToApply;
 		return helmRotationToApply;
 	}
 
