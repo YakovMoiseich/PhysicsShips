@@ -296,31 +296,6 @@ Prefab:
       propertyPath: m_RootOrder
       value: 3
       objectReference: {fileID: 0}
-    - target: {fileID: 198433100362728244, guid: db4b2e58ba4774da58b447ed6de5c964,
-        type: 2}
-      propertyPath: EmissionModule.rateOverTime.scalar
-      value: 25
-      objectReference: {fileID: 0}
-    - target: {fileID: 114705402509520128, guid: db4b2e58ba4774da58b447ed6de5c964,
-        type: 2}
-      propertyPath: windSpeed
-      value: 5
-      objectReference: {fileID: 0}
-    - target: {fileID: 198433100362728244, guid: db4b2e58ba4774da58b447ed6de5c964,
-        type: 2}
-      propertyPath: useUnscaledTime
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 198433100362728244, guid: db4b2e58ba4774da58b447ed6de5c964,
-        type: 2}
-      propertyPath: randomSeed
-      value: -1359021456
-      objectReference: {fileID: 0}
-    - target: {fileID: 198433100362728244, guid: db4b2e58ba4774da58b447ed6de5c964,
-        type: 2}
-      propertyPath: NoiseModule.frequency
-      value: 0.2
-      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: db4b2e58ba4774da58b447ed6de5c964, type: 2}
   m_IsPrefabParent: 0
