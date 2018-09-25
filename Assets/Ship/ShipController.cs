@@ -18,8 +18,7 @@ public class ShipController : MonoBehaviour
 		
 	}
 
-	void Update()
-	{
+	void Update() {
 		Vector3 normalizedYPosition = transform.position;
 		normalizedYPosition.y = 0.0f;
 		transform.position = normalizedYPosition;
@@ -39,8 +38,13 @@ public class ShipController : MonoBehaviour
 		}
 
 		Vector3 windVector = windZone.gameObject.GetComponent<WindController>().GetWindVector();
+		Vector3 resultForce = Vector3.zero;
+		Vector3 forceFromSail = _mastController.ApplyWind(windVector);
+
+		resultForce += forceFromSail;
+
 		Rigidbody shipBody = gameObject.GetComponent<Rigidbody>();
 		float forceFactor = 0.5f;
-		_shipBody.AddForce(windVector * forceFactor);
+		_shipBody.AddForce(resultForce * forceFactor);
 	}
 }

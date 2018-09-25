@@ -28,7 +28,6 @@ public class HelmController : MonoBehaviour {
 
 	void Update() {
 		AlignHelm();
-		float verticalInput = Input.GetAxis("Vertical");
 		float horizontalInput = Input.GetAxis("Horizontal");
 		RotateHelmOnInput(horizontalInput);
 	}
