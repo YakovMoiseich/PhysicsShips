@@ -6,15 +6,16 @@ public class WindController : MonoBehaviour {
 
 	public float windSpeed = 5.0f;
 
-	private GameObject _windZone;
-	private Mesh _windZoneMesh;
 	private ParticleSystem _windParticles;
+	private Vector3 _windDirection;
+
+	public Vector3 GetWindVector() {
+		return _windDirection * windSpeed;
+	}
 
 	void Awake() {
-		_windZone = gameObject;
 		_windParticles = gameObject.GetComponent<ParticleSystem>();
-		_windZoneMesh = gameObject.GetComponent<MeshFilter>().mesh;
-
+		_windDirection = new Vector3(0.0f, 0.0f, 1.0f);
 	}
 
 	void HideParticles() {
@@ -38,8 +39,6 @@ public class WindController : MonoBehaviour {
 	
 	void Update() {
 		UpdateParticlesSpeed(windSpeed);
-		_windZoneMesh.RecalculateBounds();
-		Debug.Log("_windZoneMesh.bounds = " + _windZoneMesh.bounds);
 	}
 
 }
