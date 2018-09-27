@@ -6,12 +6,16 @@ public class ShipController : MonoBehaviour
 {
 	private HelmController _helmController;
 	private MastController _mastController;
+	private DeckController _deckController;
 	private Rigidbody _shipBody;
+
+	private float _shipMass;
 
 	void Awake() {
 		_shipBody = gameObject.GetComponent<Rigidbody>();
 		_helmController = transform.Find("Helm").gameObject.GetComponent<HelmController>();
 		_mastController = transform.Find("Mast").gameObject.GetComponent<MastController>();
+		_deckController = transform.Find("Deck").gameObject.GetComponent<DeckController>();
 	}
 
 	void Start() {
@@ -19,10 +23,24 @@ public class ShipController : MonoBehaviour
 	}
 
 	void Update() {
-		Vector3 normalizedYPosition = transform.position;
-		normalizedYPosition.y = 0.0f;
-		transform.position = normalizedYPosition;
+		UpdateShipDrawdown();
+		WaterFrictionForce();
 		RotateShipWithHelm();
+	}
+
+	public void WaterFrictionForce() {
+		Vector3 waterFrictionForce = _deckController.GetDeckWaterFrictionForce(_shipBody.velocity);
+		Debug.Log("waterFrictionForce = " + waterFrictionForce);
+		_shipBody.AddForce(waterFrictionForce);
+	}
+
+	void UpdateShipDrawdown() {
+		float additionalMass = _mastController.GetMass();
+		_deckController.SetDrawdownSize(additionalMass);
+		Vector3 drawdownSize = _deckController.GetDrawdownSize();
+		Vector3 normalizedYPosition = transform.position;
+		normalizedYPosition.y = -drawdownSize.y;
+		transform.position = normalizedYPosition;
 	}
 
 	void RotateShipWithHelm() {

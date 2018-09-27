@@ -2,10 +2,10 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class MastController : MonoBehaviour
-{
+public class MastController : MonoBehaviour {
 
-	public float sailForceMultiplier = 0.05f;
+	public float sailForceMultiplier = 0.1f;
+	public float mass = 1.0f;
 
 	private Transform _sail;
 	private Mesh _sailMesh;
@@ -18,12 +18,8 @@ public class MastController : MonoBehaviour
 		sailSizeChange *= 0.1f;
 		Vector3 updatedSaleSize = _sail.localScale;
 		Vector3 updatedSalePosition = _sail.localPosition;
-
 		float sailNewSizeY = Mathf.Min(Mathf.Max(updatedSaleSize.y + sailSizeChange, _minSailSize), _maxSailSize);
 		float sailNewPositionY = _initialSailPositionY - (sailNewSizeY - _initialSailSizeY) / 2.0f;
-
-		Debug.Log("sailSizeChange = " + sailSizeChange + "; _initialSailSizeY = " + _initialSailSizeY + "; sailNewPosition = " + _initialSailPositionY);
-
 		updatedSaleSize.y = sailNewSizeY;
 		updatedSalePosition.y = sailNewPositionY;
 		_sail.localScale = updatedSaleSize;
@@ -34,7 +30,10 @@ public class MastController : MonoBehaviour
 		float windToForceFactor = Vector3.Dot(GetSailNormal(), windVector);
 		Vector3 resultWindForce = GetSailNormal() * GetSailSquare() * sailForceMultiplier * windToForceFactor;
 		return resultWindForce;
-//		return Vector3.zero;
+	}
+
+	public float GetMass() {
+		return mass;
 	}
 
 	void Awake() {

@@ -209,7 +209,7 @@ Transform:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 390881147}
   m_LocalRotation: {x: 0.42180732, y: 0.05611818, z: -0.026168335, w: 0.9045688}
-  m_LocalPosition: {x: -32.4, y: 25, z: -29}
+  m_LocalPosition: {x: -32, y: 52.4, z: -57.3}
   m_LocalScale: {x: 1, y: 60.793343, z: 60.793404}
   m_Children: []
   m_Father: {fileID: 0}
@@ -399,6 +399,18 @@ TrailRenderer:
   m_MinVertexDistance: 0.1
   m_Autodestruct: 1
   m_Emitting: 1
+--- !u!114 &801647651
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 801647645}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b740614295bb1e14bb45d7ef02952821, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _deckMass: 5
 --- !u!1001 &849319787
 Prefab:
   m_ObjectHideFlags: 0
@@ -446,7 +458,7 @@ Prefab:
     - target: {fileID: 114705402509520128, guid: db4b2e58ba4774da58b447ed6de5c964,
         type: 2}
       propertyPath: windSpeed
-      value: 5
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 4192660833899986, guid: db4b2e58ba4774da58b447ed6de5c964, type: 2}
       propertyPath: m_LocalScale.x
@@ -476,6 +488,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   sailForceMultiplier: 0.1
+  mass: 1
 --- !u!1001 &1697709552
 Prefab:
   m_ObjectHideFlags: 0
@@ -533,7 +546,7 @@ Prefab:
     - target: {fileID: 54542838105273782, guid: c5cff9e0cd18e43dfbbb0aeb9887109f,
         type: 2}
       propertyPath: m_Constraints
-      value: 0
+      value: 16
       objectReference: {fileID: 0}
     - target: {fileID: 1663702740249980, guid: c5cff9e0cd18e43dfbbb0aeb9887109f, type: 2}
       propertyPath: m_TagString
@@ -670,6 +683,26 @@ Prefab:
       propertyPath: m_LocalScale.y
       value: 4
       objectReference: {fileID: 0}
+    - target: {fileID: 4820304955557258, guid: c5cff9e0cd18e43dfbbb0aeb9887109f, type: 2}
+      propertyPath: m_LocalPosition.z
+      value: 0.1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4645908751157904, guid: c5cff9e0cd18e43dfbbb0aeb9887109f, type: 2}
+      propertyPath: m_LocalScale.x
+      value: 0.15
+      objectReference: {fileID: 0}
+    - target: {fileID: 4645908751157904, guid: c5cff9e0cd18e43dfbbb0aeb9887109f, type: 2}
+      propertyPath: m_LocalScale.z
+      value: 0.15
+      objectReference: {fileID: 0}
+    - target: {fileID: 4645908751157904, guid: c5cff9e0cd18e43dfbbb0aeb9887109f, type: 2}
+      propertyPath: m_LocalPosition.z
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4645908751157904, guid: c5cff9e0cd18e43dfbbb0aeb9887109f, type: 2}
+      propertyPath: m_LocalPosition.x
+      value: -0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: c5cff9e0cd18e43dfbbb0aeb9887109f, type: 2}
   m_IsPrefabAsset: 0
@@ -751,7 +784,7 @@ MeshCollider:
   m_GameObject: {fileID: 1922652070}
   m_Material: {fileID: 0}
   m_IsTrigger: 0
-  m_Enabled: 1
+  m_Enabled: 0
   serializedVersion: 3
   m_Convex: 0
   m_CookingOptions: 14
