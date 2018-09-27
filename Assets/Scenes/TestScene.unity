@@ -410,7 +410,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b740614295bb1e14bb45d7ef02952821, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _deckMass: 5
+  deckWaterFrictionFactor: 0.5
+  deckWindAccelerationFactor: 0.1
+  deckMass: 5
 --- !u!1001 &849319787
 Prefab:
   m_ObjectHideFlags: 0
@@ -487,7 +489,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a30d8111a6bba3541a3b2865e50cf867, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  sailForceMultiplier: 0.1
+  sailForceMultiplier: 0.2
   mass: 1
 --- !u!1001 &1697709552
 Prefab:

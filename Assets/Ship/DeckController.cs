@@ -4,7 +4,8 @@ using UnityEngine;
 
 public class DeckController : MonoBehaviour {
 
-	public float deckFrictionForceFactor = 0.5f;
+	public float deckWaterFrictionFactor = 0.5f;
+	public float deckWindAccelerationFactor = 0.1f;
 	public float deckMass = 5.0f;
 	private Vector3 _deckSize;
 	private Vector3 _drawdownSize;
@@ -25,10 +26,20 @@ public class DeckController : MonoBehaviour {
 		Vector3 resultFrictionForce = Vector3.zero;
 		int deckNormals = 4;
 		for (int i = 0; i < deckNormals; ++i){
-			resultFrictionForce += PhysicsHelper.CalculateObjectFrictionForce(shipSpeed, GetDeckPartNormal(i), GetDrawdownSquare(i), deckFrictionForceFactor);
+			resultFrictionForce += PhysicsHelper.CalculateObjectFrictionForce(shipSpeed, GetDeckPartNormal(i), GetDrawdownSquare(i), deckWaterFrictionFactor);
 		}
 
 		return resultFrictionForce;
+	}
+
+	public Vector3 GetDeckWindForce(Vector3 windSpeed) {
+		Vector3 resultWindAccelerationForce = Vector3.zero;
+		int deckNormals = 4;
+		for (int i = 0; i < deckNormals; ++i) {
+			resultWindAccelerationForce += PhysicsHelper.CalculateObjectAcceleratingForce(windSpeed, GetDeckPartNormal(i), GetDrawdownSquare(i), deckWindAccelerationFactor);
+		}
+
+		return resultWindAccelerationForce;
 	}
 
 	Vector3 GetDeckPartNormal(int partIndex) {

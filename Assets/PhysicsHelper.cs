@@ -20,4 +20,13 @@ public class PhysicsHelper {
 		return objectVelocity * dotProduct * frictionSquare * frictionFactor;
 	}
 
+	public static Vector3 CalculateObjectAcceleratingForce(Vector3 accelerationVelocity, Vector3 objectNormal, float frictionSquare, float frictionFactor) {
+		float dotProduct = Vector3.Dot(accelerationVelocity, objectNormal);
+		if (dotProduct <= 0) {
+			return Vector3.zero;
+		}
+
+		return accelerationVelocity * dotProduct * frictionSquare * frictionFactor;
+	}
+
 }

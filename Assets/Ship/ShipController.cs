@@ -11,6 +11,8 @@ public class ShipController : MonoBehaviour
 
 	private float _shipMass;
 
+	private Vector3 _incomingWind = Vector3.zero;
+
 	void Awake() {
 		_shipBody = gameObject.GetComponent<Rigidbody>();
 		_helmController = transform.Find("Helm").gameObject.GetComponent<HelmController>();
@@ -23,15 +25,22 @@ public class ShipController : MonoBehaviour
 	}
 
 	void Update() {
+		WindAcceleratingForce(_incomingWind);
 		UpdateShipDrawdown();
 		WaterFrictionForce();
 		RotateShipWithHelm();
 	}
 
-	public void WaterFrictionForce() {
+	void WaterFrictionForce() {
 		Vector3 waterFrictionForce = _deckController.GetDeckWaterFrictionForce(_shipBody.velocity);
-		Debug.Log("waterFrictionForce = " + waterFrictionForce);
 		_shipBody.AddForce(waterFrictionForce);
+	}
+
+	void WindAcceleratingForce(Vector3 windVector) {
+		Vector3 forceFromSail = _mastController.GetWindAccelerationForce(windVector);
+		Vector3 forceFromDeck = _deckController.GetDeckWindForce(windVector);
+		Vector3 resultForce = forceFromSail + forceFromDeck;
+		_shipBody.AddForce(resultForce);
 	}
 
 	void UpdateShipDrawdown() {
@@ -55,14 +64,6 @@ public class ShipController : MonoBehaviour
 			return;
 		}
 
-		Vector3 windVector = windZone.gameObject.GetComponent<WindController>().GetWindVector();
-		Vector3 resultForce = Vector3.zero;
-		Vector3 forceFromSail = _mastController.ApplyWind(windVector);
-
-		resultForce += forceFromSail;
-
-		Rigidbody shipBody = gameObject.GetComponent<Rigidbody>();
-		float forceFactor = 0.5f;
-		_shipBody.AddForce(resultForce * forceFactor);
+		_incomingWind = windZone.gameObject.GetComponent<WindController>().GetWindVector();
 	}
 }

@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class MastController : MonoBehaviour {
 
-	public float sailForceMultiplier = 0.1f;
+	public float sailForceMultiplier = 0.03f;
 	public float mass = 1.0f;
 
 	private Transform _sail;
@@ -26,7 +26,7 @@ public class MastController : MonoBehaviour {
 		_sail.localPosition = updatedSalePosition;
 	}
 
-	public Vector3 ApplyWind(Vector3 windVector) {
+	public Vector3 GetWindAccelerationForce(Vector3 windVector) {
 		float windToForceFactor = Vector3.Dot(GetSailNormal(), windVector);
 		Vector3 resultWindForce = GetSailNormal() * GetSailSquare() * sailForceMultiplier * windToForceFactor;
 		return resultWindForce;
