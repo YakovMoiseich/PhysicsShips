@@ -4,8 +4,8 @@ using UnityEngine;
 
 public class DeckController : MonoBehaviour {
 
-	public float deckWaterFrictionFactor = 0.5f;
-	public float deckWindAccelerationFactor = 0.1f;
+	public float deckWaterFrictionFactor = 2.0f;
+	public float deckWindAccelerationFactor = 0.02f;
 	public float deckMass = 5.0f;
 	private Vector3 _deckSize;
 	private Vector3 _drawdownSize;
@@ -36,7 +36,7 @@ public class DeckController : MonoBehaviour {
 		Vector3 resultWindAccelerationForce = Vector3.zero;
 		int deckNormals = 4;
 		for (int i = 0; i < deckNormals; ++i) {
-			resultWindAccelerationForce += PhysicsHelper.CalculateObjectAcceleratingForce(windSpeed, GetDeckPartNormal(i), GetDrawdownSquare(i), deckWindAccelerationFactor);
+			resultWindAccelerationForce += PhysicsHelper.CalculateObjectAcceleratingForce(windSpeed, GetDeckPartNormal(i), GetUnderWaterSquare(i), deckWindAccelerationFactor);
 		}
 
 		return resultWindAccelerationForce;
@@ -60,6 +60,12 @@ public class DeckController : MonoBehaviour {
 		int partMultiplicity = partIndex % 2;
 		float partWide = partIndex % 2 == 0 ? transform.localScale.x : transform.localScale.z;
 		return GetDrawdownSize().y * partWide;
+	}
+
+	float GetUnderWaterSquare(int partIndex) {
+		int partMultiplicity = partIndex % 2;
+		float partWide = partIndex % 2 == 0 ? transform.localScale.x : transform.localScale.z;
+		return (transform.localScale.y - GetDrawdownSize().y) * partWide;
 	}
 
 	void Start () {

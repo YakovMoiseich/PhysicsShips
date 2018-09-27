@@ -410,8 +410,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b740614295bb1e14bb45d7ef02952821, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  deckWaterFrictionFactor: 0.5
-  deckWindAccelerationFactor: 0.1
+  deckWaterFrictionFactor: 1
+  deckWindAccelerationFactor: 0.05
   deckMass: 5
 --- !u!1001 &849319787
 Prefab:
