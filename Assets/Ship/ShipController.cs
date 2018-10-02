@@ -4,6 +4,11 @@ using UnityEngine;
 
 public class ShipController : MonoBehaviour
 {
+
+	public Transform deckFrictionForceArrow;
+	public Transform helmFrictionForceArrow;
+	public Transform windAcceleratingForceArrow;
+
 	private HelmController _helmController;
 	private MastController _mastController;
 	private DeckController _deckController;
@@ -18,6 +23,10 @@ public class ShipController : MonoBehaviour
 		_helmController = transform.Find("Helm").gameObject.GetComponent<HelmController>();
 		_mastController = transform.Find("Mast").gameObject.GetComponent<MastController>();
 		_deckController = transform.Find("Deck").gameObject.GetComponent<DeckController>();
+
+//		Instantiate(deckFrictionForceArrow, false);
+//		Instantiate(helmFrictionForceArrow, false);
+//		Instantiate(windAcceleratingForceArrow, false);
 	}
 
 	void Start() {
@@ -28,19 +37,23 @@ public class ShipController : MonoBehaviour
 		WindAcceleratingForce(_incomingWind);
 		UpdateShipDrawdown();
 		WaterFrictionForce();
-		RotateShipWithHelm();
 	}
 
 	void WaterFrictionForce() {
-		Vector3 waterFrictionForce = _deckController.GetDeckWaterFrictionForce(_shipBody.velocity);
-		_shipBody.AddForce(waterFrictionForce);
+		Vector3 deckWaterFrictionForce = _deckController.GetDeckWaterFrictionForce(_shipBody.velocity);
+		PhysicsHelper.ShowForce(deckFrictionForceArrow, transform.position, deckWaterFrictionForce);
+		_shipBody.AddForce(deckWaterFrictionForce);
+		Vector3 helmWaterFrictionForce = _helmController.GetHelmWaterFrictionForce(_shipBody.velocity);
+		PhysicsHelper.ShowForce(helmFrictionForceArrow, _helmController.GetHelmTurnApplyForcePosition(), helmWaterFrictionForce);
+		_shipBody.AddForceAtPosition(helmWaterFrictionForce, _helmController.GetHelmTurnApplyForcePosition());
 	}
 
 	void WindAcceleratingForce(Vector3 windVector) {
 		Vector3 forceFromSail = _mastController.GetWindAccelerationForce(windVector);
 		Vector3 forceFromDeck = _deckController.GetDeckWindForce(windVector);
-		Vector3 resultForce = forceFromSail + forceFromDeck;
-		_shipBody.AddForce(resultForce);
+		Vector3 resultWindForce = forceFromSail + forceFromDeck;
+		PhysicsHelper.ShowForce(windAcceleratingForceArrow, transform.position, resultWindForce);
+		_shipBody.AddForce(resultWindForce);
 	}
 
 	void UpdateShipDrawdown() {

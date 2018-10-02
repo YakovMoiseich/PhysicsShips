@@ -29,4 +29,12 @@ public class PhysicsHelper {
 		return accelerationVelocity * dotProduct * frictionSquare * frictionFactor;
 	}
 
+	public static void ShowForce(Transform objectTransform, Vector3 pointToApply, Vector3 forceDirection) {
+		Vector3 newObjectScale = objectTransform.localScale;
+		newObjectScale.z = 1.0f + forceDirection.magnitude;
+		objectTransform.localScale = newObjectScale;
+		objectTransform.position = pointToApply;
+		objectTransform.eulerAngles = forceDirection;
+	}
+
 }

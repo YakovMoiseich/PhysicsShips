@@ -14,10 +14,9 @@ public class HelmController : MonoBehaviour {
 
 	private float _helmSquare;
 	private float _helmOffsetDegrees;
-	private Transform _helm;
+	
 
 	void Awake() {
-		_helm = transform;
 		_helmOffsetDegrees = 0.0f;
 		_helmSquare = transform.lossyScale.x * transform.lossyScale.y;
 	}
@@ -33,13 +32,32 @@ public class HelmController : MonoBehaviour {
 	}
 
 	public float GetHelmTurnForce(float currentShipSpeed) {
-		return currentShipSpeed * _helmSquare * _helmFrictionFactor * -GetCurrentHelmSignedRotation();
+		float oldTurnForce = currentShipSpeed * _helmSquare * _helmFrictionFactor * -GetCurrentHelmSignedRotation();
+		return oldTurnForce;
+	}
+
+	public Vector3 GetHelmWaterFrictionForce(Vector3 shipVelocity) {
+		Vector3 resultForce = PhysicsHelper.CalculateObjectFrictionForce(shipVelocity, GetHelmNormal(), GetHelmUnderWaterSquare(), _helmFrictionFactor);
+		return resultForce;
+	}
+
+	public Vector3 GetHelmTurnApplyForcePosition() {
+		return transform.position;
+	}
+
+	Vector3 GetHelmNormal() {
+		return GetCurrentHelmSignedRotation() > 0 ? transform.forward 
+			: -transform.forward;
+	}
+
+	float GetHelmUnderWaterSquare() {
+		return transform.lossyScale.x * transform.lossyScale.y;
 	}
 
 	void RotateHelmOnInput(float horizontalInput) {
 		float angleToRotateInDegrees = -horizontalInput * _helmRotateSpeedDegrees;
 		angleToRotateInDegrees = LimitHelmOffset(angleToRotateInDegrees);
-		_helm.transform.Rotate(Vector3.up, angleToRotateInDegrees);
+		transform.Rotate(Vector3.up, angleToRotateInDegrees);
 	}
 
 	float LimitHelmOffset(float helmRotationToApply) {
@@ -56,11 +74,11 @@ public class HelmController : MonoBehaviour {
 		float alignHelmRotation = -currentHelmRotationSign * _helmAlignSpeedDegrees;
 		bool rotationChangeSign = Mathf.Sign(currentHelmRotation + alignHelmRotation) != currentHelmRotationSign;
 		alignHelmRotation = rotationChangeSign ? -currentHelmRotation : alignHelmRotation;
-		_helm.transform.Rotate(Vector3.up, alignHelmRotation);
+		transform.Rotate(Vector3.up, alignHelmRotation);
 	}
 
 	float GetCurrentHelmSignedRotation() {
-		float currentHelmRotation = _helm.transform.localEulerAngles.y;
+		float currentHelmRotation = transform.localEulerAngles.y;
 		currentHelmRotation = currentHelmRotation > 180.0f ? currentHelmRotation - 360.0f : currentHelmRotation;
 		return currentHelmRotation;
 	}

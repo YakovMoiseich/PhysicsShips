@@ -11,7 +11,7 @@ public class DeckController : MonoBehaviour {
 	private Vector3 _drawdownSize;
 
 	void Awake() {
-		_deckSize = new Vector3(transform.localScale.x, transform.localScale.y, transform.localScale.z);
+		_deckSize = new Vector3(transform.lossyScale.x, transform.lossyScale.y, transform.lossyScale.z);
 	}
 
 	public void SetDrawdownSize(float additionalMass) {
@@ -25,7 +25,7 @@ public class DeckController : MonoBehaviour {
 	public Vector3 GetDeckWaterFrictionForce(Vector3 shipSpeed) {
 		Vector3 resultFrictionForce = Vector3.zero;
 		int deckNormals = 4;
-		for (int i = 0; i < deckNormals; ++i){
+		for (int i = 0; i < deckNormals; ++i) {
 			resultFrictionForce += PhysicsHelper.CalculateObjectFrictionForce(shipSpeed, GetDeckPartNormal(i), GetDrawdownSquare(i), deckWaterFrictionFactor);
 		}
 
@@ -58,13 +58,13 @@ public class DeckController : MonoBehaviour {
 
 	float GetDrawdownSquare(int partIndex) {
 		int partMultiplicity = partIndex % 2;
-		float partWide = partIndex % 2 == 0 ? transform.localScale.x : transform.localScale.z;
+		float partWide = partIndex % 2 == 0 ? transform.lossyScale.x : transform.lossyScale.z;
 		return GetDrawdownSize().y * partWide;
 	}
 
 	float GetUnderWaterSquare(int partIndex) {
 		int partMultiplicity = partIndex % 2;
-		float partWide = partIndex % 2 == 0 ? transform.localScale.x : transform.localScale.z;
+		float partWide = partIndex % 2 == 0 ? transform.lossyScale.x : transform.lossyScale.z;
 		return (transform.localScale.y - GetDrawdownSize().y) * partWide;
 	}
 
