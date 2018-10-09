@@ -298,6 +298,18 @@ GameObject:
   m_CorrespondingSourceObject: {fileID: 1667642730753556, guid: c5cff9e0cd18e43dfbbb0aeb9887109f,
     type: 2}
   m_PrefabInternal: {fileID: 1697709552}
+--- !u!135 &801647648
+SphereCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 801647645}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Radius: 0.5
+  m_Center: {x: 0, y: 0, z: 0}
 --- !u!96 &801647650
 TrailRenderer:
   serializedVersion: 2
@@ -713,7 +725,7 @@ Prefab:
     - target: {fileID: 65038634486126378, guid: c5cff9e0cd18e43dfbbb0aeb9887109f,
         type: 2}
       propertyPath: m_Enabled
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 114962054612495932, guid: c5cff9e0cd18e43dfbbb0aeb9887109f,
         type: 2}
@@ -780,9 +792,23 @@ Prefab:
     - target: {fileID: 65038634486126378, guid: c5cff9e0cd18e43dfbbb0aeb9887109f,
         type: 2}
       propertyPath: m_IsTrigger
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1667642730753556, guid: c5cff9e0cd18e43dfbbb0aeb9887109f, type: 2}
+      propertyPath: m_TagString
+      value: Ships
+      objectReference: {fileID: 0}
+    - target: {fileID: 33024529316203696, guid: c5cff9e0cd18e43dfbbb0aeb9887109f,
+        type: 2}
+      propertyPath: m_Mesh
+      value: 
+      objectReference: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+    - target: {fileID: 1667642730753556, guid: c5cff9e0cd18e43dfbbb0aeb9887109f, type: 2}
+      propertyPath: m_StaticEditorFlags
       value: 1
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 65038634486126378, guid: c5cff9e0cd18e43dfbbb0aeb9887109f, type: 2}
   m_SourcePrefab: {fileID: 100100000, guid: c5cff9e0cd18e43dfbbb0aeb9887109f, type: 2}
   m_IsPrefabAsset: 0
 --- !u!1 &1713343174 stripped

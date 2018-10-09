@@ -11,7 +11,6 @@ public class ShipController : MonoBehaviour
 
 	private float _shipMass;
 
-//	private Vector3 _windResultVector;
 	private Dictionary<Collider, Vector3> _windZones;
 
 	private Vector3 _deckFrictionForce;
@@ -24,25 +23,6 @@ public class ShipController : MonoBehaviour
 		_helmController = transform.Find("Helm").gameObject.GetComponent<HelmController>();
 		_mastController = transform.Find("Mast").gameObject.GetComponent<MastController>();
 		_deckController = transform.Find("Deck").gameObject.GetComponent<DeckController>();
-	}
-
-	void FixedUpdate() {
-//		Color color_1 = Color.white;
-//		Color color_2 = Color.black;
-//		Color color_3 = Color.green;
-//		Vector3 windForceStart = transform.position;
-//		Vector3 windForceEnd = transform.position + _windAcceleratingForce;
-//		Debug.DrawLine(windForceStart, windForceEnd, windForceColor);
-//		Vector3 deckForceStart = transform.position;
-//		Vector3 deckForceEnd = transform.position + _deckFrictionForce;
-//		Debug.DrawLine(deckForceStart, deckForceEnd, deckForceColor);
-//
-//		Vector3 helmNormal =_helmController.GetHelmNormal();
-//		Vector3 helmForceStart = _helmController.GetHelmTurnApplyForcePosition();
-//		Vector3 helmForceEnd = _helmFrictionForce + _helmController.GetHelmTurnApplyForcePosition();
-//		Debug.DrawLine(helmForceStart, helmForceEnd, color_3);
-//
-//		Debug.DrawLine(helmForceStart, helmForceStart + helmNormal, color_1);
 	}
 
 	void Start() {

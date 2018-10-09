@@ -11,21 +11,64 @@ public class DeckController : MonoBehaviour {
 	private Vector3 _deckSize;
 	private Vector3 _drawdownSize;
 
-	private List<Transform> _controlPointsDebugs;
-	private List<Vector3> _deckControlPoints;
+	private int _controlPointsLevels = 2;
+	private int _controlPointsQuantity = 6;
+	private float _controlPointDegreesOffset;
+	private float _controlPointsLevelHeight;
+	private List<Vector3> _deckControlPoints = new List<Vector3>();
+	private List<Transform> _controlPointsDebugs = new List<Transform>();
+
 	private Collider _deckCollider;
 
 	void Awake() {
 		_deckSize = new Vector3(transform.lossyScale.x, transform.lossyScale.y, transform.lossyScale.z);
-		_deckCollider = transform.GetComponent<BoxCollider>();
-		_controlPointsDebugs = new List<Transform>();
-		for (int i = 0; i < 4; ++i) {
-			_controlPointsDebugs.Add(GameObject.CreatePrimitive(PrimitiveType.Sphere).transform);
-			_controlPointsDebugs[i].GetComponent<SphereCollider>().enabled = false;
-		}
+		_deckCollider = transform.GetComponent<Collider>();
 
-		_deckControlPoints = new List<Vector3>();
+		InitDeckControlPoints();
 		UpdateDeckControlPoints();
+	}
+
+	void InitDeckControlPoints() {
+		_controlPointDegreesOffset = 360.0f / _controlPointsQuantity;
+		_controlPointsLevelHeight = transform.localScale.y / _controlPointsLevels;
+		for (int i = 0; i < _controlPointsLevels; ++i) {
+			for (int j = 0; j < _controlPointsQuantity; ++j) {
+				_deckControlPoints.Add(Vector3.zero);
+				_controlPointsDebugs.Add(GameObject.CreatePrimitive(PrimitiveType.Sphere).transform);
+				_controlPointsDebugs[i * _controlPointsQuantity + j].GetComponent<SphereCollider>().enabled = false;
+				_controlPointsDebugs[i * _controlPointsQuantity + j].localScale *= 0.7f;
+			}
+		}
+	}
+
+	void UpdateDeckControlPoints() {
+		Vector3 pointToRayscast;
+		RaycastHit hit;
+		for (int i = 0; i < _controlPointsLevels; ++i) {
+			pointToRayscast = _deckCollider.bounds.center - transform.up * transform.localScale.y / 2.0f;
+			pointToRayscast.y += _controlPointsLevelHeight * i;
+			for (int j = 0; j < _controlPointsQuantity; ++j) {
+				Vector3 pointFromRaycast = pointToRayscast + Quaternion.Euler(0.0f, _controlPointDegreesOffset * j, 0.0f) * transform.forward * _deckCollider.bounds.size.magnitude / 2.0f;
+				pointFromRaycast.y = pointToRayscast.y;
+//				Debug.DrawRay(pointFromRaycast, pointToRayscast - pointFromRaycast, Color.yellow);
+				if (!Physics.Raycast(pointFromRaycast, pointToRayscast - pointFromRaycast, out hit, Mathf.Infinity)) {
+					continue;
+				}
+
+				_deckControlPoints[i * _controlPointsQuantity + j] = hit.point;
+			}
+		}
+	}
+
+	void UpdateDebugSpheres() {
+		for (int i = 0; i < _deckControlPoints.Count; ++i) {
+			Vector3 controlPointWorldPosition = _deckControlPoints[i];
+			_controlPointsDebugs[i].position = controlPointWorldPosition;
+		}
+	}
+
+	void CalculateDeckControlPoints() {
+
 	}
 
 	public void SetDrawdownSize(float additionalMass) {
@@ -82,30 +125,9 @@ public class DeckController : MonoBehaviour {
 		return (transform.localScale.y - GetDrawdownSize().y) * partWide;
 	}
 
-	void UpdateDeckControlPoints() {
-		Vector3 centerToBottom = _deckCollider.bounds.center - transform.up;
-		Vector3 toForward = transform.forward * transform.localScale.z / 2.0f;
-		Vector3 toRight = transform.right * transform.localScale.x / 2.0f;
-		Vector3 forwardLeft = centerToBottom + toForward - toRight;
-		Vector3 forwardRight = centerToBottom + toForward + toRight;
-		Vector3 backLeft = centerToBottom - toForward - toRight;
-		Vector3 backRight = centerToBottom - toForward + toRight;
+	
 
-		if (_deckControlPoints.Count == 0) {
-			for (int i = 0; i < 4; ++i) {
-				_deckControlPoints.Add(Vector3.zero);
-			}
-		}
-
-		_deckControlPoints[0] = forwardLeft;
-		_deckControlPoints[1] = forwardRight;
-		_deckControlPoints[2] = backLeft;
-		_deckControlPoints[3] = backRight;
-
-		for (int j = 0; j < _deckControlPoints.Count; ++j) {
-			_controlPointsDebugs[j].position = _deckControlPoints[j];
-		}
-	}
+	
 	
 	void OnCTriggerStay(Collider water) {
 		if (water.tag != "Water") {
@@ -121,8 +143,8 @@ public class DeckController : MonoBehaviour {
 		
 	}
 	
-	void Update ()
-	{
+	void Update () {
 		UpdateDeckControlPoints();
+		UpdateDebugSpheres();
 	}
 }
