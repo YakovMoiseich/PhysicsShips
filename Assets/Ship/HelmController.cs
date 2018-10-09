@@ -9,12 +9,12 @@ public class HelmController : MonoBehaviour {
 
 	private float maxHelmAngle = 55.0f;
 	private float minHelmAngle = -55.0f;
+	private float rotationPrecisionLossAngle = 1.5f;
 
 	private float _helmFrictionFactor = 0.1f;
 
 	private float _helmSquare;
 	private float _helmOffsetDegrees;
-	
 
 	void Awake() {
 		_helmOffsetDegrees = 0.0f;
@@ -31,13 +31,9 @@ public class HelmController : MonoBehaviour {
 		RotateHelmOnInput(horizontalInput);
 	}
 
-	public float GetHelmTurnForce(float currentShipSpeed) {
-		float oldTurnForce = currentShipSpeed * _helmSquare * _helmFrictionFactor * -GetCurrentHelmSignedRotation();
-		return oldTurnForce;
-	}
-
 	public Vector3 GetHelmWaterFrictionForce(Vector3 shipVelocity) {
-		Vector3 resultForce = PhysicsHelper.CalculateObjectFrictionForce(shipVelocity, GetHelmNormal(), GetHelmUnderWaterSquare(), _helmFrictionFactor);
+		Vector3 frictionForce = PhysicsHelper.CalculateObjectFrictionForce(shipVelocity, GetHelmNormal(), GetHelmUnderWaterSquare(), _helmFrictionFactor);
+		Vector3 resultForce = Vector3.Project(frictionForce, GetHelmNormal());
 		return resultForce;
 	}
 
@@ -45,9 +41,13 @@ public class HelmController : MonoBehaviour {
 		return transform.position;
 	}
 
-	Vector3 GetHelmNormal() {
-		return GetCurrentHelmSignedRotation() > 0 ? transform.forward 
-			: -transform.forward;
+	public Vector3 GetHelmNormal() {
+		if (Mathf.Abs(GetCurrentHelmSignedRotation()) <= rotationPrecisionLossAngle) {
+			return Vector3.zero;
+		}
+
+		return GetCurrentHelmSignedRotation() > rotationPrecisionLossAngle ? -transform.right 
+			: transform.right;
 	}
 
 	float GetHelmUnderWaterSquare() {

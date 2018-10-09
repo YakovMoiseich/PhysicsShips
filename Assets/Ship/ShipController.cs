@@ -4,11 +4,6 @@ using UnityEngine;
 
 public class ShipController : MonoBehaviour
 {
-
-	public Transform deckFrictionForceArrow;
-	public Transform helmFrictionForceArrow;
-	public Transform windAcceleratingForceArrow;
-
 	private HelmController _helmController;
 	private MastController _mastController;
 	private DeckController _deckController;
@@ -16,17 +11,38 @@ public class ShipController : MonoBehaviour
 
 	private float _shipMass;
 
-	private Vector3 _incomingWind = Vector3.zero;
+//	private Vector3 _windResultVector;
+	private Dictionary<Collider, Vector3> _windZones;
+
+	private Vector3 _deckFrictionForce;
+	private Vector3 _helmFrictionForce;
+	private Vector3 _windAcceleratingForce;
 
 	void Awake() {
+		_windZones = new Dictionary<Collider, Vector3>();
 		_shipBody = gameObject.GetComponent<Rigidbody>();
 		_helmController = transform.Find("Helm").gameObject.GetComponent<HelmController>();
 		_mastController = transform.Find("Mast").gameObject.GetComponent<MastController>();
 		_deckController = transform.Find("Deck").gameObject.GetComponent<DeckController>();
+	}
 
-//		Instantiate(deckFrictionForceArrow, false);
-//		Instantiate(helmFrictionForceArrow, false);
-//		Instantiate(windAcceleratingForceArrow, false);
+	void FixedUpdate() {
+//		Color color_1 = Color.white;
+//		Color color_2 = Color.black;
+//		Color color_3 = Color.green;
+//		Vector3 windForceStart = transform.position;
+//		Vector3 windForceEnd = transform.position + _windAcceleratingForce;
+//		Debug.DrawLine(windForceStart, windForceEnd, windForceColor);
+//		Vector3 deckForceStart = transform.position;
+//		Vector3 deckForceEnd = transform.position + _deckFrictionForce;
+//		Debug.DrawLine(deckForceStart, deckForceEnd, deckForceColor);
+//
+//		Vector3 helmNormal =_helmController.GetHelmNormal();
+//		Vector3 helmForceStart = _helmController.GetHelmTurnApplyForcePosition();
+//		Vector3 helmForceEnd = _helmFrictionForce + _helmController.GetHelmTurnApplyForcePosition();
+//		Debug.DrawLine(helmForceStart, helmForceEnd, color_3);
+//
+//		Debug.DrawLine(helmForceStart, helmForceStart + helmNormal, color_1);
 	}
 
 	void Start() {
@@ -34,17 +50,17 @@ public class ShipController : MonoBehaviour
 	}
 
 	void Update() {
-		WindAcceleratingForce(_incomingWind);
+		WindAcceleratingForce(GetWindZonesResultVector());
 		UpdateShipDrawdown();
 		WaterFrictionForce();
 	}
 
 	void WaterFrictionForce() {
 		Vector3 deckWaterFrictionForce = _deckController.GetDeckWaterFrictionForce(_shipBody.velocity);
-		PhysicsHelper.ShowForce(deckFrictionForceArrow, transform.position, deckWaterFrictionForce);
-		_shipBody.AddForce(deckWaterFrictionForce);
 		Vector3 helmWaterFrictionForce = _helmController.GetHelmWaterFrictionForce(_shipBody.velocity);
-		PhysicsHelper.ShowForce(helmFrictionForceArrow, _helmController.GetHelmTurnApplyForcePosition(), helmWaterFrictionForce);
+		_deckFrictionForce = deckWaterFrictionForce;
+		_helmFrictionForce = helmWaterFrictionForce;
+		_shipBody.AddForce(deckWaterFrictionForce);
 		_shipBody.AddForceAtPosition(helmWaterFrictionForce, _helmController.GetHelmTurnApplyForcePosition());
 	}
 
@@ -52,7 +68,7 @@ public class ShipController : MonoBehaviour
 		Vector3 forceFromSail = _mastController.GetWindAccelerationForce(windVector);
 		Vector3 forceFromDeck = _deckController.GetDeckWindForce(windVector);
 		Vector3 resultWindForce = forceFromSail + forceFromDeck;
-		PhysicsHelper.ShowForce(windAcceleratingForceArrow, transform.position, resultWindForce);
+		_windAcceleratingForce = resultWindForce;
 		_shipBody.AddForce(resultWindForce);
 	}
 
@@ -65,11 +81,13 @@ public class ShipController : MonoBehaviour
 		transform.position = normalizedYPosition;
 	}
 
-	void RotateShipWithHelm() {
-		Vector3 shipVelocity = _shipBody.velocity;
-		float currentShipForwardSpeed = transform.InverseTransformDirection(shipVelocity).x;
-		float forceToRotateFromHelm = _helmController.GetHelmTurnForce(currentShipForwardSpeed);
-		_shipBody.AddTorque(0.0f, forceToRotateFromHelm, 0.0f, ForceMode.Force);
+	Vector3 GetWindZonesResultVector() {
+		Vector3 resultWind = Vector3.zero;
+		foreach (KeyValuePair<Collider, Vector3> windZone in _windZones) {
+			resultWind += windZone.Value;
+		}
+
+		return resultWind;
 	}
 
 	void OnTriggerStay(Collider windZone) {
@@ -77,6 +95,14 @@ public class ShipController : MonoBehaviour
 			return;
 		}
 
-		_incomingWind = windZone.gameObject.GetComponent<WindController>().GetWindVector();
+		_windZones[windZone] = windZone.gameObject.GetComponent<WindController>().GetWindVector();
+	}
+
+	void OnTriggerExit(Collider windZone) {
+		if (windZone.tag != "WindZones") {
+			return;
+		}
+
+		_windZones[windZone] = Vector3.zero;
 	}
 }

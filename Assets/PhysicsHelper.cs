@@ -5,9 +5,9 @@ public class PhysicsHelper {
 	public const float WATER_DENSITY = 10.0f;
 
 	public static Vector3 CalculateObjectDrawdown(float objectMass, Vector3 objectSize) {
-		float drowdawnVolume = objectMass / WATER_DENSITY;
+		float drawdownVolume = objectMass / WATER_DENSITY;
 		float objectVolume = objectSize.x * objectSize.y * objectSize.z;
-		Vector3 objectDrawdownVolume = objectSize * drowdawnVolume / objectVolume;
+		Vector3 objectDrawdownVolume = objectSize * drawdownVolume / objectVolume;
 		return objectDrawdownVolume;
 	}
 
@@ -28,13 +28,4 @@ public class PhysicsHelper {
 
 		return accelerationVelocity * dotProduct * frictionSquare * frictionFactor;
 	}
-
-	public static void ShowForce(Transform objectTransform, Vector3 pointToApply, Vector3 forceDirection) {
-		Vector3 newObjectScale = objectTransform.localScale;
-		newObjectScale.z = 1.0f + forceDirection.magnitude;
-		objectTransform.localScale = newObjectScale;
-		objectTransform.position = pointToApply;
-		objectTransform.eulerAngles = forceDirection;
-	}
-
 }
