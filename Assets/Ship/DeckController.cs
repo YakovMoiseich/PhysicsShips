@@ -50,7 +50,6 @@ public class DeckController : MonoBehaviour {
 			for (int j = 0; j < _controlPointsQuantity; ++j) {
 				Vector3 pointFromRaycast = pointToRayscast + Quaternion.Euler(0.0f, _controlPointDegreesOffset * j, 0.0f) * transform.forward * _deckCollider.bounds.size.magnitude / 2.0f;
 				pointFromRaycast.y = pointToRayscast.y;
-//				Debug.DrawRay(pointFromRaycast, pointToRayscast - pointFromRaycast, Color.yellow);
 				if (!Physics.Raycast(pointFromRaycast, pointToRayscast - pointFromRaycast, out hit, Mathf.Infinity)) {
 					continue;
 				}
