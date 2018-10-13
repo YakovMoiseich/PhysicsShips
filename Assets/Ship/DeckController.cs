@@ -11,8 +11,8 @@ public class DeckController : MonoBehaviour {
 	private Vector3 _deckSize;
 	private Vector3 _drawdownSize;
 
-	private int _controlPointsLevels = 2;
-	private int _controlPointsQuantity = 6;
+	private int _controlPointsLevels = 1;
+	private int _controlPointsQuantity = 13;
 	private float _controlPointDegreesOffset;
 	private float _controlPointsLevelHeight;
 	private List<Vector3> _deckControlPoints = new List<Vector3>();
@@ -66,8 +66,9 @@ public class DeckController : MonoBehaviour {
 		}
 	}
 
-	void CalculateDeckControlPoints() {
-
+	float CalculateDeckDrawdownVolume() {
+		float drawdownResultVolume = 0.0f;
+		return drawdownResultVolume;
 	}
 
 	public void SetDrawdownSize(float additionalMass) {
@@ -133,7 +134,7 @@ public class DeckController : MonoBehaviour {
 			return;
 		}
 
-//		water.ClosestPoint()
+		water.ClosestPoint()
 	}
 
 	

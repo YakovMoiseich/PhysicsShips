@@ -57,7 +57,7 @@ public class ShipController : MonoBehaviour
 		_deckController.SetDrawdownSize(additionalMass);
 		Vector3 drawdownSize = _deckController.GetDrawdownSize();
 		Vector3 normalizedYPosition = transform.position;
-		normalizedYPosition.y = -drawdownSize.y;
+//		normalizedYPosition.y = -drawdownSize.y;
 		transform.position = normalizedYPosition;
 	}
 

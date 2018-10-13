@@ -1,0 +1,14 @@
+# Blender MTL File: 'Pirate Ship deck.blend'
+# Material Count: 1
+
+newmtl Material
+Ns 98.039216
+Ka 1.000000 1.000000 1.000000
+Kd 0.652321 0.652321 0.652321
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.000000
+d 0.000000
+illum 1
+map_Kd C:\Users\Daniel\Documents\Blender\Pirate Ship\Pirate Ship_1024.png
+map_d C:\\Users\\Daniel\\Documents\\Blender\\Pirate Ship\\Pirate Ship_1024.png
