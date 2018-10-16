@@ -53,12 +53,11 @@ public class ShipController : MonoBehaviour
 	}
 
 	void UpdateShipDrawdown() {
-//		float additionalMass = _mastController.GetMass();
-//		_deckController.SetDrawdownSize(additionalMass);
-//		Vector3 drawdownSize = _deckController.GetDrawdownSize();
-//		Vector3 normalizedYPosition = transform.position;
-//		normalizedYPosition.y = -drawdownSize.y;
-//		transform.position = normalizedYPosition;
+		Dictionary<Vector3, Vector3> pointsForces = _deckController.GetExtrudingControlForces();
+		foreach (KeyValuePair<Vector3, Vector3> controlPointForce in pointsForces) {
+			Debug.DrawLine(controlPointForce.Key, controlPointForce.Key + controlPointForce.Value, Color.yellow);
+			_shipBody.AddForceAtPosition(controlPointForce.Value, controlPointForce.Key);
+		}
 	}
 
 	Vector3 GetWindZonesResultVector() {

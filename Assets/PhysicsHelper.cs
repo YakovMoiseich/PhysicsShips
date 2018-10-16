@@ -2,13 +2,18 @@
 
 public class PhysicsHelper {
 	
-	public const float WATER_DENSITY = 10.0f;
+	public const float WATER_DENSITY = 1000.0f;
+	public const float GRAVITY_CONSTANT = 9.8f;
 
 	public static Vector3 CalculateObjectDrawdown(float objectMass, Vector3 objectSize) {
 		float drawdownVolume = objectMass / WATER_DENSITY;
 		float objectVolume = objectSize.x * objectSize.y * objectSize.z;
 		Vector3 objectDrawdownVolume = objectSize * drawdownVolume / objectVolume;
 		return objectDrawdownVolume;
+	}
+
+	public static float CalcuateOverallExtrudingYForce(float objectUnderwaterVolume) {
+		return WATER_DENSITY * GRAVITY_CONSTANT * objectUnderwaterVolume;
 	}
 
 	public static Vector3 CalculateObjectFrictionForce(Vector3 objectVelocity, Vector3 objectNormal, float frictionSquare, float frictionFactor) {

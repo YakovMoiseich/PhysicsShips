@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.AI;
@@ -16,6 +17,7 @@ public class DeckController : MonoBehaviour {
 
 	private int _controlPointsLevels = 1;
 	private int _controlPointsQuantity = 13;
+	private int _controlPointsForceStepsMultiplier = 10;
 	private float _controlPointDegreesOffset;
 	private float _controlPointsLevelHeight;
 	private List<Vector3> _deckControlPoints = new List<Vector3>();
@@ -26,19 +28,40 @@ public class DeckController : MonoBehaviour {
 	private Mesh _deckDrawdownMesh;
 
 	void Awake() {
-		_deckSize = new Vector3(transform.lossyScale.x, transform.lossyScale.y, transform.lossyScale.z);
-		_deckMeshCollider = transform.GetComponent<MeshCollider>();
-		for (int i = 0; i < _deckMeshCollider.sharedMesh.vertices.Length - 3; i += 3) {
-			_deckFullVolume += GeometryHelper.CalculateTriangleVolume(_deckMeshCollider.sharedMesh.vertices[i], _deckMeshCollider.sharedMesh.vertices[i + 1], _deckMeshCollider.sharedMesh.vertices[i + 2]);
-		}
-
-		_deckDrawdownMesh = new Mesh();
-
-		InitDeckControlPoints();
+		InitDeck();
 		UpdateDeckControlPoints();
 	}
 
-	void InitDeckControlPoints() {
+	public Dictionary<Vector3, Vector3> GetExtrudingControlForces() {
+		float underwaterMeshVolume = CalculateDeckDrawdownVolume();
+		float overallExtrudingYForce = PhysicsHelper.CalcuateOverallExtrudingYForce(underwaterMeshVolume);
+		List<float> offsets = new List<float>();
+
+		float overallOffset = 0.0f;
+		for (int i = 0; i < _deckControlPoints.Count; ++i) {
+			offsets.Add((_deckControlPoints[i] - _deckControlPointsClosestToWater[i]).y);
+		}
+		float maxFromWaterDistance = offsets.Max();
+
+		List<float> pointsWeigths = new List<float>();
+		for (int i = 0; i < _deckControlPoints.Count; ++i) {
+			float pointWeight = Mathf.Abs(maxFromWaterDistance - _deckControlPoints[i].y);
+			pointsWeigths.Add(pointWeight);
+		}
+
+		float forceUnit = overallExtrudingYForce / pointsWeigths.Sum();
+		Dictionary<Vector3, Vector3> resultPointsForces = new Dictionary<Vector3, Vector3>();
+		for (int i = 0; i < _deckControlPoints.Count; ++i) {
+			resultPointsForces[_deckControlPoints[i]] = new Vector3(0.0f, pointsWeigths[i] * -forceUnit, 0.0f);
+		}
+
+		return resultPointsForces;
+	}
+
+	void InitDeck() {
+		_deckMeshCollider = transform.GetComponent<MeshCollider>();
+		_deckDrawdownMesh = new Mesh();
+
 		_controlPointDegreesOffset = 360.0f / _controlPointsQuantity;
 		_controlPointsLevelHeight = transform.localScale.y / _controlPointsLevels;
 		for (int i = 0; i < _controlPointsLevels; ++i) {
@@ -49,6 +72,10 @@ public class DeckController : MonoBehaviour {
 				_controlPointsDebugs[i * _controlPointsQuantity + j].GetComponent<SphereCollider>().enabled = false;
 				_controlPointsDebugs[i * _controlPointsQuantity + j].localScale *= 0.7f;
 			}
+		}
+
+		for (int i = 0; i < _deckMeshCollider.sharedMesh.vertices.Length - 3; i += 3) {
+			_deckFullVolume += GeometryHelper.CalculateTriangleVolume(_deckMeshCollider.sharedMesh.vertices[i], _deckMeshCollider.sharedMesh.vertices[i + 1], _deckMeshCollider.sharedMesh.vertices[i + 2]);
 		}
 	}
 
@@ -77,6 +104,27 @@ public class DeckController : MonoBehaviour {
 		}
 	}
 
+	Mesh UpdateDrawdownMesh(MeshCollider waterMeshCollider) {
+		for (int i = 0; i < _deckControlPoints.Count; ++i) {
+			_deckControlPointsClosestToWater[i] = waterMeshCollider.ClosestPoint(_deckControlPoints[i]);
+		}
+
+		List<Vector3> undewaterVertices = new List<Vector3>();
+		int underwaterVertexCounter = 0;
+		for (int j = 0; j < _deckMeshCollider.sharedMesh.vertices.Length - 3; j += 3) {
+			Vector3 vertex = _deckMeshCollider.sharedMesh.vertices[j];
+			float waterHeigth = _deckControlPoints[GetClosestControlPointIndex(vertex)].y;
+			if (vertex.y < waterHeigth) {
+				undewaterVertices.Add(vertex);
+				undewaterVertices.Add(_deckMeshCollider.sharedMesh.vertices[j + 1]);
+				undewaterVertices.Add(_deckMeshCollider.sharedMesh.vertices[j + 2]);
+			}
+		}
+
+		_deckDrawdownMesh.vertices = undewaterVertices.ToArray();
+		return _deckDrawdownMesh;
+	}
+
 	float CalculateDeckDrawdownVolume() {
 		float drawdownResultVolume = 0.0f;
 		for (int i = 0; i < _deckDrawdownMesh.vertices.Length - 3; i += 3) {
@@ -85,6 +133,28 @@ public class DeckController : MonoBehaviour {
 
 		drawdownResultVolume = _deckFullVolume - Mathf.Abs(drawdownResultVolume);
 		return drawdownResultVolume;
+	}
+
+	int GetClosestControlPointIndex(Vector3 vertex) {
+		float shortestDistance = Mathf.Infinity;
+		int closestIndex = 0;
+		for (int i = 0; i < _deckControlPoints.Count; ++i) {
+			float distance = Vector3.Distance(vertex, _deckControlPoints[i]);
+			if (shortestDistance > distance) {
+				shortestDistance = distance; 
+				closestIndex = i;
+			}
+		}
+
+		return closestIndex;
+	}
+
+	void OnTriggerStay(Collider water) {
+		if (water.tag != "Water") {
+			return;
+		}
+
+		_deckDrawdownMesh = UpdateDrawdownMesh((MeshCollider)water);
 	}
 
 	public void SetDrawdownSize(float additionalMass) {
@@ -117,13 +187,17 @@ public class DeckController : MonoBehaviour {
 
 	Vector3 GetDeckPartNormal(int partIndex) {
 		switch (partIndex) {
-			case 0: return transform.parent.forward;
+			case 0:
+				return transform.parent.forward;
 				break;
-			case 1: return transform.parent.right;
+			case 1:
+				return transform.parent.right;
 				break;
-			case 2: return -transform.parent.forward;
+			case 2:
+				return -transform.parent.forward;
 				break;
-			case 3: return -transform.parent.right;
+			case 3:
+				return -transform.parent.right;
 				break;
 			default: return Vector3.zero;
 		}
@@ -141,50 +215,6 @@ public class DeckController : MonoBehaviour {
 		return (transform.localScale.y - GetDrawdownSize().y) * partWide;
 	}
 
-	Mesh UpdateDrawdownMesh(MeshCollider waterMeshCollider) {
-		for (int i = 0; i < _deckControlPoints.Count; ++i) {
-			_deckControlPointsClosestToWater[i] = waterMeshCollider.ClosestPoint(_deckControlPoints[i]);
-		}
-
-		List<Vector3> undewaterVertices = new List<Vector3>();
-		int underwaterVertexCounter = 0;
-		for (int j = 0; j < _deckMeshCollider.sharedMesh.vertices.Length - 3; j += 3) {
-			Vector3 vertex = _deckMeshCollider.sharedMesh.vertices[j];
-			float waterHeigth = _deckControlPoints[GetClosestControlPointIndex(vertex)].y;
-			if (vertex.y < waterHeigth) {
-				undewaterVertices.Add(vertex);
-				undewaterVertices.Add(_deckMeshCollider.sharedMesh.vertices[j + 1]);
-				undewaterVertices.Add(_deckMeshCollider.sharedMesh.vertices[j + 2]);
-			}
-		}
-
-
-		_deckDrawdownMesh.vertices = undewaterVertices.ToArray();
-		return _deckDrawdownMesh;
-	}
-
-	int GetClosestControlPointIndex(Vector3 vertex) {
-		float shortestDistance = Mathf.Infinity;
-		int closestIndex = 0;
-		for (int i = 0; i < _deckControlPoints.Count; ++i) {
-			float distance = Vector3.Distance(vertex, _deckControlPoints[i]);
-			if (shortestDistance > distance) {
-				shortestDistance = distance; 
-				closestIndex = i;
-			}
-		}
-
-		return closestIndex;
-	}
-
-	void OnTriggerStay(Collider water) {
-		if (water.tag != "Water") {
-			return;
-		}
-
-		_deckDrawdownMesh = UpdateDrawdownMesh((MeshCollider)water);
-	}
-
 	void Start () {
 		
 	}
@@ -192,6 +222,5 @@ public class DeckController : MonoBehaviour {
 	void Update () {
 		UpdateDeckControlPoints();
 		UpdateDebugSpheres(_deckControlPointsClosestToWater);
-		CalculateDeckDrawdownVolume();
 	}
 }
